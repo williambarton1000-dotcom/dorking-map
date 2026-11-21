@@ -123,5 +123,5 @@ window.TELL_US = {
 
 /* GoatCounter is off until a site code is pasted here. Do not invent or sign up for one. */
 window.ANALYTICS = {
-  goatcounterCode: ''         // e.g. 'yourcode' injects https://yourcode.goatcounter.com/count
+  goatcounterCode: 'dorkingmap'         // e.g. 'yourcode' injects https://yourcode.goatcounter.com/count
 };
