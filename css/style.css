@@ -77,6 +77,11 @@ body{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
 .pin-body svg{transform:rotate(45deg);color:#fff}
 .pin:hover .pin-body,.pin.active .pin-body{transform:rotate(-45deg) scale(1.18)}
 .pin.active{z-index:2}
+/* smaller pin variant (e.g. small car parks) */
+.pin.pin-sm{width:26px;height:32px}
+.pin.pin-sm .pin-body{width:22px;height:22px;border-width:2px}
+.lg-dot.lg-dot-lg{width:13px;height:13px}
+.lg-dot.lg-dot-sm{width:9px;height:9px;margin:0 2px}
 /* grouped pins: count bubble with a ring of the member colours, and fan-out legs */
 .cluster{border:0;padding:3px;cursor:pointer;width:40px;height:40px;border-radius:50%;background:var(--ring,#3f6b46);
   box-shadow:0 3px 8px rgba(0,0,0,.35);display:block;transition:transform .15s}

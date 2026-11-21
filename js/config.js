@@ -90,9 +90,21 @@ window.LAYERS = [
     fields: { name: 'Name', description: 'Description', practical: ['Food_and_Drink', 'Atmosphere'],
               lore: 'History', website: 'Website', address: 'Address' }
   },
-  // ---- Placeholder: set comingSoon:false once the CSV exists ----
-  { id: 'walks', name: 'Walk start points', file: 'data/car_parks.csv',  colour: '#2f7f8f', icon: 'boot', comingSoon: true,
-    fields: { name: 'Name', description: 'Description', practical: 'Notes', website: 'Website', address: 'Address' } }
+  {
+    id: 'walks',
+    name: 'Walk start points',
+    file: 'data/walks.csv',
+    colour: '#1f5f6b',
+    icon: 'boot',
+    comingSoon: false,
+    // One layer, two styles: Main = larger, darker pin; Small = smaller, lighter pin
+    categoryField: 'Tier',
+    categories: { 'Main': '#1f5f6b', 'Small': '#5fa8b5' },
+    categoryLabels: { 'Main': 'Main car park', 'Small': 'Small car park' },
+    categoryPinClass: { 'Small': 'pin-sm' },
+    fields: { name: 'Name', description: 'Description', practical: 'Practical', nearby: 'Nearby',
+              website: 'Website', address: 'Address', precision: 'Coord_Precision' }
+  }
 ];
 
 window.NEWSLETTER = { text: "Get the weekly Dorking what's on", url: '#' };

@@ -38,6 +38,8 @@
     }
     return layer.colour;
   }
+  // optional display labels for categories, e.g. Tier 'Main' -> 'Main car park'
+  function catLabel(layer, cat) { return (layer.categoryLabels && layer.categoryLabels[cat]) || cat; }
   function isUrl(s) { return /^https?:\/\//i.test(String(s || '').trim()); }
   function hostOf(u) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return 'Website'; } }
 
@@ -48,7 +50,7 @@
       return cols.map(function (c) { return (row[c] || '').trim(); }).filter(Boolean).join(' ');
     };
     var lat = row.Latitude, lng = row.Longitude;
-    var cat = layer.categoryField ? row[layer.categoryField] : layer.name;
+    var cat = layer.categoryField ? catLabel(layer, row[layer.categoryField]) : layer.name;
     var h = '<div class="pop">';
     h += '<div class="pop-cat" style="color:' + colour + '"><span class="pop-dot" style="background:' + colour + '"></span>' + esc(cat) + '</div>';
     h += '<h3>' + esc(v('name')) + '</h3>';
@@ -90,13 +92,16 @@
       if (!isFinite(lat) || !isFinite(lng)) return;
       var colour = colourFor(layer, row);
       var el = document.createElement('button');
-      el.className = 'pin';
+      var cat = layer.categoryField ? row[layer.categoryField] : null;
+      // optional per-category pin style, e.g. smaller pins for small car parks
+      el.className = 'pin' + (cat && layer.categoryPinClass && layer.categoryPinClass[cat] ? ' ' + layer.categoryPinClass[cat] : '');
+      var small = /\bpin-sm\b/.test(el.className);
       el.type = 'button';
       el.setAttribute('aria-label', row[layer.fields.name] || layer.name);
       el.title = row[layer.fields.name] || '';
       el.style.setProperty('--c', colour);
-      el.innerHTML = '<span class="pin-body">' + svgIcon(layer.icon, 15) + '</span>';
-      var popup = new gl.Popup({ offset: [0, -36], anchor: 'bottom', maxWidth: '320px', closeButton: true, focusAfterOpen: false })
+      el.innerHTML = '<span class="pin-body">' + svgIcon(layer.icon, small ? 12 : 15) + '</span>';
+      var popup = new gl.Popup({ offset: [0, small ? -28 : -36], anchor: 'bottom', maxWidth: '320px', closeButton: true, focusAfterOpen: false })
         .setHTML(popupHtml(layer, row, colour));
       popup.on('open', function () {
         openPopup = popup; el.classList.add('active');
@@ -105,6 +110,7 @@
       popup.on('close', function () { el.classList.remove('active'); });
       var marker = new gl.Marker({ element: el, anchor: 'bottom' }).setLngLat([lng, lat]).setPopup(popup).addTo(map);
       marker._dkName = row[layer.fields.name];
+      marker._dkPopOffset = small ? [0, -28] : [0, -36];
       st.markers.push({ marker: marker, category: layer.categoryField ? row[layer.categoryField] : null, lnglat: [lng, lat], colour: colour });
     });
   }
@@ -126,7 +132,8 @@
   function clearGroups() { groupEls.forEach(function (g) { g.remove(); }); groupEls = []; }
   function setPinOffset(m, dx, dy) {
     m.marker.setOffset([dx, dy]);
-    m.marker.getPopup().setOffset([POP_OFFSET[0] + dx, POP_OFFSET[1] + dy]);
+    var po = m.marker._dkPopOffset || POP_OFFSET;
+    m.marker.getPopup().setOffset([po[0] + dx, po[1] + dy]);
   }
   function fanOut(members, centre) {
     var n = members.length, r = Math.max(30, Math.round(42 * n / (2 * Math.PI)));
@@ -246,8 +253,8 @@
           if (!n) return;
           var s = document.createElement('li');
           s.innerHTML = '<label><input type="checkbox" checked data-layer="' + layer.id + '" data-cat="' + esc(cat) + '">' +
-            '<span class="lg-dot" style="background:' + layer.categories[cat] + '"></span>' +
-            '<span class="lg-name">' + esc(cat) + '</span><span class="lg-count">' + n + '</span></label>';
+            '<span class="lg-dot' + (layer.categoryPinClass && layer.categoryPinClass[cat] === 'pin-sm' ? ' lg-dot-sm' : (layer.categoryPinClass ? ' lg-dot-lg' : '')) + '" style="background:' + layer.categories[cat] + '"></span>' +
+            '<span class="lg-name">' + esc(catLabel(layer, cat)) + '</span><span class="lg-count">' + n + '</span></label>';
           sub.appendChild(s);
         });
         li.appendChild(sub);
