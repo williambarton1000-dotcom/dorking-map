@@ -22,3 +22,6 @@ Static site: open `index.html` via any web server (GitHub Pages, Netlify, or `py
 ## Basemaps
 - Map: OpenFreeMap "liberty" (OpenStreetMap data, no key, free).
 - Satellite: Esri World Imagery (no key; attribution shown). For heavy public traffic check Esri's terms, or switch to Mapbox satellite.
+
+## Overlapping pins
+Pins that would overlap on screen are grouped into a numbered bubble (ringed in the colours of the places inside). Tapping it zooms in on them. From zoom 15, or wherever places share almost the same spot (e.g. the Denbies distillery and brewery), the group fans out in a small circle with thin lines to the true position. Tune `CLUSTER_PX`, `BUBBLE_PX` and `FAN_ZOOM` at the top of the grouping section in `js/app.js`. Phones open on `MAP_START.phoneBounds` in `js/config.js`.

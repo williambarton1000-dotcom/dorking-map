@@ -18,7 +18,9 @@ window.MAP_PROVIDER = {
 
 window.MAP_START = {
   center: [-0.345, 51.225],     // Dorking
-  zoom: 11.2
+  zoom: 11.2,
+  // Phones open on this box (Dorking, Denbies, Box Hill foot and Westcott edge)
+  phoneBounds: [[-0.372, 51.218], [-0.302, 51.264]]
 };
 
 window.BASEMAPS = {

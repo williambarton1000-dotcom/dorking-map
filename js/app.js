@@ -105,16 +105,123 @@
       popup.on('close', function () { el.classList.remove('active'); });
       var marker = new gl.Marker({ element: el, anchor: 'bottom' }).setLngLat([lng, lat]).setPopup(popup).addTo(map);
       marker._dkName = row[layer.fields.name];
-      st.markers.push({ marker: marker, category: layer.categoryField ? row[layer.categoryField] : null, lnglat: [lng, lat] });
+      st.markers.push({ marker: marker, category: layer.categoryField ? row[layer.categoryField] : null, lnglat: [lng, lat], colour: colour });
     });
   }
+  function isShown(st, m) { return st.visible && !(m.category && st.hiddenCats[m.category]); }
   function refreshVisibility(layerId) {
     var st = state[layerId];
     st.markers.forEach(function (m) {
-      var show = st.visible && !(m.category && st.hiddenCats[m.category]);
-      m.marker.getElement().style.display = show ? '' : 'none';
-      if (!show && m.marker.getPopup().isOpen()) m.marker.togglePopup();
+      if (!isShown(st, m) && m.marker.getPopup().isOpen()) m.marker.togglePopup();
     });
+    recluster();
+  }
+
+  // ---------- grouping of overlapping pins ----------
+  // Pins closer than CLUSTER_PX on screen are drawn as one count bubble; tapping it
+  // zooms in on them. From FAN_ZOOM up (or where places share one spot) the group
+  // fans out in a small circle around its true position, with thin leader lines.
+  var CLUSTER_PX = 22, BUBBLE_PX = 36, FAN_ZOOM = 15, POP_OFFSET = [0, -36];
+  var groupEls = [];
+  function clearGroups() { groupEls.forEach(function (g) { g.remove(); }); groupEls = []; }
+  function setPinOffset(m, dx, dy) {
+    m.marker.setOffset([dx, dy]);
+    m.marker.getPopup().setOffset([POP_OFFSET[0] + dx, POP_OFFSET[1] + dy]);
+  }
+  function fanOut(members, centre) {
+    var n = members.length, r = Math.max(30, Math.round(42 * n / (2 * Math.PI)));
+    var size = 2 * r + 12, legs = '';
+    members.forEach(function (m, i) {
+      var a = n === 2 ? (i ? 0 : Math.PI) : (-Math.PI / 2 + i * 2 * Math.PI / n);
+      var dx = Math.round(r * Math.cos(a)), dy = Math.round(r * Math.sin(a));
+      setPinOffset(m, dx, dy);
+      m.marker.getElement().style.display = '';
+      legs += '<line x1="' + size / 2 + '" y1="' + size / 2 + '" x2="' + (size / 2 + dx) + '" y2="' + (size / 2 + dy) + '"/>';
+    });
+    var el = document.createElement('div');
+    el.className = 'spider';
+    el.innerHTML = '<svg width="' + size + '" height="' + size + '">' + legs +
+      '<circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="4"/></svg>';
+    var mk = new gl.Marker({ element: el, anchor: 'center' }).setLngLat(centre).addTo(map);
+    var cc = map.getCanvasContainer(), cv = map.getCanvas();
+    cc.insertBefore(el, cv.nextSibling);   // keep the legs underneath the pins
+    groupEls.push(mk);
+  }
+  function bubble(members, centre) {
+    members.forEach(function (m) { m.marker.getElement().style.display = 'none'; m.clustered = true; });
+    var el = document.createElement('button');
+    el.type = 'button';
+    el.className = 'cluster';
+    el.setAttribute('aria-label', members.length + ' places here: tap to zoom in');
+    el.title = members.map(function (m) { return m.marker._dkName; }).join(', ');
+    // a ring of the member colours, so the bubble hints at what is inside
+    var cols = members.map(function (m) { return m.colour; });
+    var stops = cols.map(function (c, i) { return c + ' ' + (i * 100 / cols.length) + '% ' + ((i + 1) * 100 / cols.length) + '%'; });
+    el.style.setProperty('--ring', 'conic-gradient(' + stops.join(',') + ')');
+    el.innerHTML = '<span>' + members.length + '</span>';
+    el.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var b = new gl.LngLatBounds();
+      members.forEach(function (m) { b.extend(m.lnglat); });
+      var pad = Math.min(90, map.getContainer().clientWidth / 5);
+      map.fitBounds(b, { padding: pad, maxZoom: FAN_ZOOM + 0.5, duration: 450 });
+    });
+    groupEls.push(new gl.Marker({ element: el, anchor: 'center' }).setLngLat(centre).addTo(map));
+  }
+  function recluster() {
+    clearGroups();
+    var items = [];
+    for (var id in state) {
+      state[id].markers.forEach(function (m) {
+        m.clustered = false;
+        setPinOffset(m, 0, 0);
+        if (isShown(state[id], m)) { m.p = map.project(m.lnglat); items.push(m); }
+        else m.marker.getElement().style.display = 'none';
+      });
+    }
+    // pass 1: pins closer than CLUSTER_PX join the first pin's group
+    var used = [], zoom = map.getZoom(), groups = [];
+    for (var i = 0; i < items.length; i++) {
+      if (used[i]) continue;
+      var seed = items[i], g = [seed]; used[i] = true;
+      for (var j = i + 1; j < items.length; j++) {
+        if (used[j]) continue;
+        var dx = items[j].p.x - seed.p.x, dy = items[j].p.y - seed.p.y;
+        if (dx * dx + dy * dy < CLUSTER_PX * CLUSTER_PX) { g.push(items[j]); used[j] = true; }
+      }
+      groups.push(g);
+    }
+    // pass 2: a bubble must not cover a pin or another bubble, so merge those that touch
+    function gc(g) { var x = 0, y = 0; g.forEach(function (m) { x += m.p.x; y += m.p.y; }); return { x: x / g.length, y: y / g.length }; }
+    var merged = true;
+    while (merged && zoom < FAN_ZOOM) {
+      merged = false;
+      for (var a = 0; a < groups.length && !merged; a++) {
+        for (var b2 = a + 1; b2 < groups.length; b2++) {
+          if (groups[a].length === 1 && groups[b2].length === 1) continue;
+          var ca = gc(groups[a]), cb = gc(groups[b2]);
+          if ((ca.x - cb.x) * (ca.x - cb.x) + (ca.y - cb.y) * (ca.y - cb.y) < BUBBLE_PX * BUBBLE_PX) {
+            groups[a] = groups[a].concat(groups[b2]); groups.splice(b2, 1); merged = true; break;
+          }
+        }
+      }
+    }
+    for (var gi = 0; gi < groups.length; gi++) {
+      var members = groups[gi], seed = members[0];
+      if (members.length === 1) { seed.marker.getElement().style.display = ''; continue; }
+      var lng = 0, lat = 0, spread = 0;
+      members.forEach(function (m) { lng += m.lnglat[0]; lat += m.lnglat[1]; });
+      var centre = [lng / members.length, lat / members.length];
+      members.forEach(function (m) {   // metres from the centre (rough, fine at this scale)
+        var ddx = (m.lnglat[0] - centre[0]) * 69600, ddy = (m.lnglat[1] - centre[1]) * 111200;
+        spread = Math.max(spread, Math.sqrt(ddx * ddx + ddy * ddy));
+      });
+      // places sharing (almost) one spot fan out once zoomed in a little
+      if (zoom >= FAN_ZOOM || (spread < 15 && zoom >= 12.5)) fanOut(members, centre);
+      else bubble(members, centre);
+    }
+    var open = openPopup && openPopup.isOpen() ? openPopup : null;
+    if (open) for (var k = 0; k < items.length; k++) if (items[k].clustered && items[k].marker.getPopup() === open) open.remove();
   }
 
   // ---------- legend ----------
@@ -213,13 +320,18 @@
       // Fit to everything on first load
       var b = new gl.LngLatBounds();
       LAYERS.forEach(function (l) { state[l.id].markers.forEach(function (m) { b.extend(m.lnglat); }); });
-      if (!b.isEmpty()) {
-        var wide = window.innerWidth >= 760;
+      var wide = window.innerWidth >= 760, core = window.MAP_START.phoneBounds;
+      if (!wide && core) {
+        // Phones: open on Dorking and its nearest hills rather than the whole catchment
+        map.fitBounds(core, { padding: { top: 70, bottom: 90, left: 10, right: 10 }, duration: 0 });
+      } else if (!b.isEmpty()) {
         map.fitBounds(b, { padding: wide ? { top: 50, bottom: 60, left: 350, right: 70 } : { top: 40, bottom: 90, left: 30, right: 30 }, duration: 0, maxZoom: 13 });
       }
+      recluster();
+      map.on('zoomend', recluster);
       document.body.classList.add('ready');
       // Expose for testing / deep links
-      window.__dorking = { map: map, state: state, setBasemap: setBasemap, setLegend: setLegend, openPlace: openPlace };
+      window.__dorking = { map: map, state: state, setBasemap: setBasemap, setLegend: setLegend, openPlace: openPlace, recluster: recluster };
       var q = new URLSearchParams(location.search).get('place');
       if (q) openPlace(q);
     });
@@ -231,7 +343,9 @@
       for (var i = 0; i < state[id].markers.length; i++) {
         var m = state[id].markers[i];
         if (String(m.marker._dkName || '').toLowerCase().indexOf(needle) !== -1) {
-          map.jumpTo({ center: m.lnglat, zoom: Math.max(map.getZoom(), 12.5) });
+          if (openPopup && openPopup.isOpen()) openPopup.remove();
+          map.jumpTo({ center: m.lnglat, zoom: Math.max(map.getZoom(), 12.5) });   // zoomend → recluster
+          if (m.clustered) map.jumpTo({ center: m.lnglat, zoom: FAN_ZOOM + 0.2 });
           if (!m.marker.getPopup().isOpen()) m.marker.togglePopup();
           return true;
         }
