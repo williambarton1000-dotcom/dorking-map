@@ -3,10 +3,10 @@
 Static site: open `index.html` via any web server (GitHub Pages, Netlify, or `python3 -m http.server`).
 
 ## Files
-- `index.html` – page shell (header, legend, map). Analytics tag goes where marked in `<head>`.
+- `index.html` – page shell (header, legend, map). GoatCounter is injected from config, not hardcoded here.
 - `css/style.css` – all styling.
-- `js/config.js` – **the only file you normally edit**: layers, colours, icons, basemaps, newsletter link.
-- `js/app.js` – map logic (loads each CSV, draws pins, pop-ups, legend, satellite toggle).
+- `js/config.js` – **the only file you normally edit**: layers, colours, icons, basemaps, newsletter (`enabled: false` until a URL is ready), and `ANALYTICS.goatcounterCode`.
+- `js/app.js` – map logic (loads each CSV, draws pins, pop-ups, legend, satellite toggle, Tell us mailto, optional GoatCounter).
 - `data/*.csv` – one CSV per layer. Required columns: `Name`, `Latitude`, `Longitude`.
 - `vendor/` – MapLibre GL JS 4.7.1 and PapaParse, bundled so the site has no runtime library CDN dependency.
 

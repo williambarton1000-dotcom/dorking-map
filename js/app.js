@@ -22,6 +22,65 @@
   map.addControl(new gl.ScaleControl({ unit: 'imperial' }), 'bottom-right');
   map.addControl(new gl.AttributionControl({ compact: true }), 'bottom-right');
 
+  // ---------- newsletter, Tell us, GoatCounter ----------
+  var tellUsLink = document.getElementById('tell-us');
+  var tellUs = window.TELL_US || {
+    email: 'william@wbphotography.uk',
+    subject: 'Surrey Hills map: correction or idea',
+    body: 'Place name:\nWhat should change / your idea:\n'
+  };
+  function tellUsHref(placeName) {
+    var subject = tellUs.subject || 'Surrey Hills map: correction or idea';
+    var body = tellUs.body || 'Place name:\nWhat should change / your idea:\n';
+    if (placeName) {
+      subject += ' — ' + placeName;
+      body = 'Place name: ' + placeName + '\nWhat should change / your idea:\n';
+    }
+    return 'mailto:' + tellUs.email +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(body);
+  }
+  function setTellUsLink(placeName) {
+    if (tellUsLink) tellUsLink.href = tellUsHref(placeName);
+  }
+  setTellUsLink(null);
+
+  (function initNewsletter() {
+    var nl = window.NEWSLETTER || {};
+    var cta = document.getElementById('newsletter');
+    var panel = document.getElementById('newsletter-panel');
+    var show = !!nl.enabled;
+    [cta, panel].forEach(function (el) {
+      if (!el) return;
+      el.hidden = !show;
+      if (show && nl.url) el.href = nl.url;
+    });
+    if (show && nl.text) {
+      var longEl = cta && cta.querySelector('.cta-long');
+      if (longEl) longEl.textContent = nl.text;
+      var panelSpan = panel && panel.querySelector('span');
+      if (panelSpan) panelSpan.textContent = nl.text + ' →';
+    }
+  })();
+
+  (function initGoatCounter() {
+    var raw = (window.ANALYTICS && window.ANALYTICS.goatcounterCode) || '';
+    var code = String(raw).trim().replace(/[^a-z0-9_-]/gi, '');
+    if (!code) return;
+    window.goatcounter = {
+      path: function () {
+        var place = new URLSearchParams(location.search).get('place');
+        var base = location.pathname || '/';
+        return place ? base + '?place=' + encodeURIComponent(place) : base;
+      }
+    };
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = '//gc.zgo.at/count.js';
+    s.setAttribute('data-goatcounter', 'https://' + code + '.goatcounter.com/count');
+    document.head.appendChild(s);
+  })();
+
   // ---------- helpers ----------
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -105,9 +164,13 @@
         .setHTML(popupHtml(layer, row, colour));
       popup.on('open', function () {
         openPopup = popup; el.classList.add('active');
+        setTellUsLink(row[layer.fields.name] || '');
         requestAnimationFrame(function () { fitPopup(popup, [lng, lat]); });
       });
-      popup.on('close', function () { el.classList.remove('active'); });
+      popup.on('close', function () {
+        el.classList.remove('active');
+        if (openPopup === popup) { openPopup = null; setTellUsLink(null); }
+      });
       var marker = new gl.Marker({ element: el, anchor: 'bottom' }).setLngLat([lng, lat]).setPopup(popup).addTo(map);
       marker._dkName = row[layer.fields.name];
       marker._dkPopOffset = small ? [0, -28] : [0, -36];
@@ -338,7 +401,7 @@
       map.on('zoomend', recluster);
       document.body.classList.add('ready');
       // Expose for testing / deep links
-      window.__dorking = { map: map, state: state, setBasemap: setBasemap, setLegend: setLegend, openPlace: openPlace, recluster: recluster };
+      window.__dorking = { map: map, state: state, setBasemap: setBasemap, setLegend: setLegend, openPlace: openPlace, recluster: recluster, tellUsHref: tellUsHref, setTellUsLink: setTellUsLink };
       var q = new URLSearchParams(location.search).get('place');
       if (q) openPlace(q);
     });

@@ -18,12 +18,10 @@
 
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- ============================================================
-       ANALYTICS TAG GOES HERE
-       e.g. Plausible:
-       <script defer data-domain="map.example.uk" src="https://plausible.io/js/script.js"></script>
-       or Google Analytics (gtag.js) snippet.
-       ============================================================ -->
+  <!-- GoatCounter is disabled. Set ANALYTICS.goatcounterCode in js/config.js
+       to inject: <script data-goatcounter="https://CODE.goatcounter.com/count"
+       async src="//gc.zgo.at/count.js"></script>
+       Do not sign up or invent a code here. -->
 </head>
 <body>
   <header class="topbar">
@@ -34,7 +32,7 @@
         <p class="tagline">Walks, food, lore &amp; landmarks — the Dorking Directory</p>
       </div>
     </div>
-    <a class="cta" id="newsletter" href="#">
+    <a class="cta" id="newsletter" href="#" hidden>
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
       <span class="cta-long">Get the weekly Dorking what's on</span><span class="cta-short">What's on</span>
     </a>
@@ -61,11 +59,16 @@
           <button class="bm-btn" data-bm="satellite">Satellite</button>
         </div>
       </div>
-      <a class="lg-cta" href="#">
+      <a class="lg-cta" id="newsletter-panel" href="#" hidden>
         <strong>Plan your weekend?</strong>
-        <span>Get the weekly Dorking what's on, free every Thursday →</span>
+        <span>Get the weekly Dorking what's on →</span>
       </a>
-      <p class="lg-foot">Tap a pin for details &amp; directions. Spotted something out of date? <a href="#">Tell us</a>.</p>
+      <p class="lg-foot">Tap a pin for details &amp; directions.</p>
+      <p class="lg-tell"><a id="tell-us" href="mailto:william@wbphotography.uk?subject=Surrey%20Hills%20map%3A%20correction%20or%20idea&amp;body=Place%20name%3A%0AWhat%20should%20change%20%2F%20your%20idea%3A%0A">Spot a mistake or got an idea? Tell us</a></p>
+      <details class="lg-sources">
+        <summary>Sources</summary>
+        <p>Map data © OpenStreetMap contributors (ODbL) and OpenFreeMap; satellite imagery Esri; listed building information from the National Heritage List for England © Historic England (used under the Open Government Licence); other details from National Trust, Surrey County Council, Mole Valley and Guildford councils, parish councils and venues' own websites, written in our own words.</p>
+      </details>
     </aside>
 
     <button id="legend-open" class="legend-fab" aria-label="Show layers">

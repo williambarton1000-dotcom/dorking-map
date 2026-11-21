@@ -107,4 +107,21 @@ window.LAYERS = [
   }
 ];
 
-window.NEWSLETTER = { text: "Get the weekly Dorking what's on", url: '#' };
+/* Newsletter is hidden until enabled is true and url is the Substack (or similar). */
+window.NEWSLETTER = {
+  enabled: false,             // newsletter:false — set true to show the button and legend panel
+  text: "Get the weekly Dorking what's on",
+  url: '#'
+};
+
+/* 'Tell us' goes to William's inbox. Subject gains the open place name when a pin is open. */
+window.TELL_US = {
+  email: 'william@wbphotography.uk',
+  subject: 'Surrey Hills map: correction or idea',
+  body: 'Place name:\nWhat should change / your idea:\n'
+};
+
+/* GoatCounter is off until a site code is pasted here. Do not invent or sign up for one. */
+window.ANALYTICS = {
+  goatcounterCode: ''         // e.g. 'yourcode' injects https://yourcode.goatcounter.com/count
+};
