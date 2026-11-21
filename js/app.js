@@ -42,7 +42,11 @@
   function hostOf(u) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return 'Website'; } }
 
   function popupHtml(layer, row, colour) {
-    var f = layer.fields, v = function (k) { return f[k] ? (row[f[k]] || '').trim() : ''; };
+    var f = layer.fields, v = function (k) {
+      // a field may map to one column or to a list of columns (joined with a space)
+      var cols = f[k] ? [].concat(f[k]) : [];
+      return cols.map(function (c) { return (row[c] || '').trim(); }).filter(Boolean).join(' ');
+    };
     var lat = row.Latitude, lng = row.Longitude;
     var cat = layer.categoryField ? row[layer.categoryField] : layer.name;
     var h = '<div class="pop">';

@@ -77,9 +77,18 @@ window.LAYERS = [
     fields: { name: 'Name', description: 'Short_Description', lore: 'History_or_Lore',
               website: 'Website', address: 'Address' }
   },
-  // ---- Placeholders: set comingSoon:false and a file once the CSVs exist ----
-  { id: 'pubs',  name: 'Pubs',              file: 'data/pubs.csv',       colour: '#9a6a3a', icon: 'pint', comingSoon: true,
-    fields: { name: 'Name', description: 'Description', lore: 'History_or_Lore', website: 'Website', address: 'Address' } },
+  {
+    id: 'pubs',
+    name: 'Pubs',
+    file: 'data/pubs.csv',
+    colour: '#9a6a3a',
+    icon: 'pint',
+    comingSoon: false,
+    // 'Good to know' joins two columns; 'Read more' expands the History column
+    fields: { name: 'Name', description: 'Description', practical: ['Food_and_Drink', 'Atmosphere'],
+              lore: 'History', website: 'Website', address: 'Address' }
+  },
+  // ---- Placeholder: set comingSoon:false once the CSV exists ----
   { id: 'walks', name: 'Walk start points', file: 'data/car_parks.csv',  colour: '#2f7f8f', icon: 'boot', comingSoon: true,
     fields: { name: 'Name', description: 'Description', practical: 'Notes', website: 'Website', address: 'Address' } }
 ];
