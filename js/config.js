@@ -40,7 +40,8 @@ window.ICONS = {
   church: 'M12 2v3M10.5 3.5h3M12 5l-6 5v11h12V10l-6-5zm-2 16v-4a2 2 0 0 1 4 0v4',
   landmark: 'M12 2l2.6 6.3 6.4.5-4.9 4.2 1.5 6.5L12 16l-5.6 3.5 1.5-6.5L3 8.8l6.4-.5L12 2z',
   pint: 'M7 3h10l-1.5 17a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1L7 3zm.5 5h9',
-  boot: 'M4 18h16v3H4zM6 18V5h6v7l6 2.5V18'
+  boot: 'M4 18h16v3H4zM6 18V5h6v7l6 2.5V18',
+  camera: 'M4 7h3l2-3h6l2 3h3v12H4zM12 10a3.5 3.5 0 1 0 0 7a3.5 3.5 0 1 0 0-7'
 };
 
 window.LAYERS = [
@@ -104,6 +105,15 @@ window.LAYERS = [
     categoryPinClass: { 'Small': 'pin-sm' },
     fields: { name: 'Name', description: 'Description', practical: 'Practical', nearby: 'Nearby',
               website: 'Website', address: 'Address', precision: 'Coord_Precision' }
+  },
+  {
+    id: 'photos',
+    name: 'Photography',
+    file: 'data/photos.csv',
+    colour: '#b0436e',
+    icon: 'camera',
+    comingSoon: true,
+    fields: { name: 'Name', description: 'Description', website: 'Website' }
   }
 ];
 
