@@ -1,0 +1,147 @@
+{
+  "bbox": {
+    "lat_min": 51.05,
+    "lat_max": 51.4,
+    "lon_min": -0.65,
+    "lon_max": -0.1,
+    "note": "Sensible box around the Surrey Hills / Mole Valley catchment used on this map. Wide enough for Albury and Buckland, tight enough to catch a pin dropped in the wrong county."
+  },
+  "status_off": [
+    "CLOSED",
+    "HIDDEN"
+  ],
+  "layers": [
+    {
+      "id": "food",
+      "tab": "Food & drink",
+      "file": "data/food_drink.csv",
+      "columns": [
+        "Name",
+        "Category",
+        "Address",
+        "Latitude",
+        "Longitude",
+        "Description",
+        "Practical",
+        "Nearby",
+        "Website",
+        "Notes"
+      ],
+      "key": [
+        "Name"
+      ],
+      "dropdowns": {
+        "Category": [
+          "Farm shop",
+          "Vineyard",
+          "Brewery & distillery",
+          "Market"
+        ]
+      }
+    },
+    {
+      "id": "landmarks",
+      "tab": "Landmarks & lore",
+      "file": "data/landmarks.csv",
+      "columns": [
+        "Name",
+        "Short_Description",
+        "History_or_Lore",
+        "Source_or_Website",
+        "Address",
+        "Latitude",
+        "Longitude",
+        "Coord_Precision",
+        "Coord_Source"
+      ],
+      "key": [
+        "Name"
+      ],
+      "dropdowns": {
+        "Coord_Precision": [
+          "precise",
+          "APPROX"
+        ]
+      }
+    },
+    {
+      "id": "churches",
+      "tab": "Churches",
+      "file": "data/churches.csv",
+      "columns": [
+        "Name",
+        "Short_Description",
+        "History_or_Lore",
+        "Website",
+        "Address",
+        "Latitude",
+        "Longitude",
+        "Coord_Source"
+      ],
+      "key": [
+        "Name"
+      ]
+    },
+    {
+      "id": "pubs",
+      "tab": "Pubs",
+      "file": "data/pubs.csv",
+      "columns": [
+        "Name",
+        "Village",
+        "Address",
+        "Latitude",
+        "Longitude",
+        "Description",
+        "History",
+        "Food_and_Drink",
+        "Atmosphere",
+        "Website"
+      ],
+      "key": [
+        "Name",
+        "Village"
+      ]
+    },
+    {
+      "id": "walks",
+      "tab": "Walk start points",
+      "file": "data/walks.csv",
+      "columns": [
+        "Name",
+        "Tier",
+        "Address",
+        "Latitude",
+        "Longitude",
+        "Description",
+        "Practical",
+        "Nearby",
+        "Website",
+        "Coord_Source",
+        "Coord_Precision",
+        "Notes"
+      ],
+      "key": [
+        "Name"
+      ],
+      "dropdowns": {
+        "Tier": [
+          "Main",
+          "Small"
+        ],
+        "Coord_Precision": [
+          "Exact (car park area)",
+          "Approximate (OSM point, about 30 m)"
+        ]
+      }
+    }
+  ],
+  "skipped": [
+    {
+      "id": "photos",
+      "tab": "Photography",
+      "file": "data/photos.csv",
+      "reason": "Layer is flagged comingSoon in js/config.js and data/photos.csv does not exist (or would be empty). Do not add a tab until the layer launches."
+    }
+  ]
+}

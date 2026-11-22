@@ -1,2 +1,5 @@
 screenshots/
 .DS_Store
+tools/sheet_config.local.json
+tools/.cache/
+tools/__pycache__/
