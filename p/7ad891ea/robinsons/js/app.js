@@ -110,7 +110,7 @@
       approx +
       '<div class="aerial-slot">' +
         '<img src="img/aerial-placeholder.svg" alt="">' +
-        '<span class="aerial-caption">Aerial photo by WB Photography</span>' +
+        '<span class="aerial-caption">New or existing aerial image</span>' +
       '</div>' +
       '<div class="cpop-actions">' + links.join('') + '</div>' +
     '</div>';
