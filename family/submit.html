@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <base href="/family/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2711%27 fill=%27%236e3b3a%27/%3E%3C/svg%3E">
+  <title>Tell us about a group — Dorking for families</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="form-page">
+  <header class="topbar">
+    <div class="brand">
+      <div>
+        <h1>Dorking <em>for families</em></h1>
+        <p class="tagline">Tell us about a group</p>
+      </div>
+    </div>
+    <span class="sample-badge">Preview — not published</span>
+  </header>
+  <div class="form-wrap">
+    <a class="form-back" href="index.html">← Back to the map</a>
+    <h1>Tell us about a group</h1>
+    <p class="form-lead">Know a club, class, playgroup, school or nursery that should be on the map? Send the details below. This preview has no server yet — submitting opens an email to William at WB Photography, with your answers filled in, for you to send.</p>
+    <form id="suggest-form" class="form-grid" novalidate>
+      <label for="place-name">Name of the group or place</label>
+      <input id="place-name" name="name" type="text" required autocomplete="organization">
+
+      <label for="place-type">Type</label>
+      <select id="place-type" name="type">
+        <option value="">Please choose…</option>
+        <option>Baby &amp; toddler group or class</option>
+        <option>Sports or activity club</option>
+        <option>School</option>
+        <option>Nursery or pre-school</option>
+        <option>Playground or park</option>
+        <option>Library session</option>
+        <option>Holiday club</option>
+        <option>Family day out</option>
+        <option>Healthcare or family support</option>
+        <option>Something else</option>
+      </select>
+
+      <label for="place-venue">Venue / address</label>
+      <textarea id="place-venue" name="venue" rows="3" placeholder="Hall or school name, street and postcode if you have them"></textarea>
+
+      <label for="place-ages">Ages</label>
+      <input id="place-ages" name="ages" type="text" placeholder="For example 0–4, or Year 3 to Year 6">
+
+      <label for="place-when">Days / times</label>
+      <input id="place-when" name="when" type="text" placeholder="For example Wednesdays in term time, 10–11:30am">
+
+      <label for="place-website">Website</label>
+      <input id="place-website" name="website" type="url" placeholder="https://">
+
+      <label for="place-email">Your contact email</label>
+      <input id="place-email" name="email" type="email" required autocomplete="email">
+
+      <label class="consent">
+        <input id="place-consent" name="consent" type="checkbox" required>
+        <span>I am happy for William (WB Photography) to use these details to consider adding this group to the Dorking family map, and to contact me about the listing if needed.</span>
+      </label>
+
+      <p class="form-error" id="form-error" hidden></p>
+      <div class="form-actions">
+        <button type="submit" class="form-submit">Open email to send this</button>
+      </div>
+      <p class="form-hint">Your device will open a message to william@wbphotography.uk. Nothing is sent until you press send in your email app. A proper form service can replace this later, once the map is published.</p>
+    </form>
+  </div>
+  <script>
+    (function () {
+      var form = document.getElementById('suggest-form');
+      var err = document.getElementById('form-error');
+      function val(id) { return (document.getElementById(id).value || '').trim(); }
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        err.hidden = true;
+        if (!val('place-name')) { err.textContent = 'Please add the name of the group.'; err.hidden = false; return; }
+        if (!val('place-email')) { err.textContent = 'Please add a contact email so William can get back to you.'; err.hidden = false; return; }
+        if (!document.getElementById('place-consent').checked) {
+          err.textContent = 'Please tick the consent box so the details can be used for the map.';
+          err.hidden = false;
+          return;
+        }
+        var body = [
+          'Name: ' + val('place-name'),
+          'Type: ' + val('place-type'),
+          'Venue / address: ' + val('place-venue'),
+          'Ages: ' + val('place-ages'),
+          'Days / times: ' + val('place-when'),
+          'Website: ' + val('place-website'),
+          'Contact email of submitter: ' + val('place-email'),
+          'Consent: Yes — happy for these details to be used to consider a listing, and to be contacted about it.'
+        ].join('\n');
+        var subject = 'Family map: new group — ' + val('place-name');
+        var href = 'mailto:william@wbphotography.uk?subject=' + encodeURIComponent(subject) +
+          '&body=' + encodeURIComponent(body);
+        window.location.href = href;
+      });
+    })();
+  </script>
+</body>
+</html>

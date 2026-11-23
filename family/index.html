@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <base href="/family/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Ccircle cx=%2712%27 cy=%2712%27 r=%2711%27 fill=%27%236e3b3a%27/%3E%3C/svg%3E">
+  <title>Dorking for families — clubs, classes and groups</title>
+  <meta name="description" content="A family map of clubs, classes and groups around Dorking, with filters for age and type of place. A preview for dorkingmaps.uk — not yet published.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="vendor/maplibre-gl.css">
+  <script src="vendor/maplibre-gl.js"></script>
+  <script src="vendor/papaparse.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="14" fill="currentColor" opacity=".25"/>
+        <path d="M8 19c2-6 5-9 8-9s6 3 8 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="12.5" cy="14" r="1.4" fill="currentColor"/>
+        <circle cx="19.5" cy="14" r="1.4" fill="currentColor"/>
+        <path d="M11 21c1.6 2 3.2 3 5 3s3.4-1 5-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <h1>Dorking <em>for families</em></h1>
+        <p class="tagline">Clubs, classes and groups around Dorking</p>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <label class="sr-only" for="place-search">Search places</label>
+      <input id="place-search" type="search" placeholder="Search clubs and classes…" autocomplete="off" spellcheck="false">
+      <ul id="search-results" hidden></ul>
+    </div>
+    <span class="sample-badge">Preview — not published</span>
+  </header>
+
+  <main class="stage">
+    <div id="map" aria-label="Family map of Dorking and the surrounding villages"></div>
+
+    <aside id="legend" class="legend" aria-label="Map layers and age filter">
+      <div class="lg-head">
+        <div>
+          <h2>On the map</h2>
+          <span id="legend-total" class="lg-total">Loading…</span>
+        </div>
+        <button id="legend-close" class="icon-btn" aria-label="Hide layers">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="age-filter">
+        <span class="age-label" id="age-label">Ages</span>
+        <div class="age-chips" id="age-chips" role="group" aria-labelledby="age-label"></div>
+      </div>
+      <div class="age-filter day-filter">
+        <span class="age-label" id="day-label">What’s on</span>
+        <div class="age-chips" id="day-chips" role="group" aria-labelledby="day-label"></div>
+      </div>
+      <div class="age-filter send-filter">
+        <span class="age-label" id="send-label">Inclusive</span>
+        <div class="age-chips" id="send-chips" role="group" aria-labelledby="send-label"></div>
+      </div>
+      <ul id="legend-list" class="lg-list"></ul>
+      <p class="lg-note" id="childminder-note">Childminders are not pinned — the public Ofsted file redacts names and home addresses. As at 30 June 2026 there were 81 registered childminders in the Dorking and Horley constituency (wider than this map, because it includes Horley) and 866 in Surrey, plus one Surrey childminder without domestic premises. Search <a href="https://www.surreycc.gov.uk/childcarefinder" target="_blank" rel="noopener">Surrey’s Childcare Finder</a> or <a href="https://reports.ofsted.gov.uk/" target="_blank" rel="noopener">Ofsted inspection reports</a>. There is also a “Find a local childminder” pin at Dorking Library.</p>
+      <div class="bm">
+        <span class="bm-label">View</span>
+        <div class="bm-switch" role="group" aria-label="Base map">
+          <button class="bm-btn on" data-bm="map">Map</button>
+          <button class="bm-btn" data-bm="satellite">Satellite</button>
+        </div>
+      </div>
+      <p class="lg-foot">Tap a pin for details, times and directions. Listings are free. This preview is not yet published.</p>
+      <p class="lg-tell"><a class="tell-btn" href="submit.html">Tell us about a group</a></p>
+      <p class="lg-tell"><a id="tell-us" href="mailto:william@wbphotography.uk?subject=Family%20map%3A%20correction%20or%20idea&amp;body=Place%20name%3A%0AWhat%20should%20change%20%2F%20your%20idea%3A%0A">Spot a mistake? Tell us</a></p>
+      <p class="lg-note">The “Where to live” polygons follow official character areas where those have been named, but most boundaries are approximate because Mole Valley’s 2010, 2013 and 2025 character-area maps were not available as public files. Click an area for a short description and an area-level median price (withheld when there are fewer than 10 sales).</p>
+      <details class="lg-sources">
+        <summary>Sources</summary>
+        <p>Clubs and groups are taken from each organisation’s own website where one exists, or from a single reliable listing, checked on 22 November 2026. Schools come from the Department for Education’s Get Information About Schools extract of 22 November 2026. Nurseries and pre-schools come from Ofsted’s childcare providers file as at 30 June 2026. Both official datasets are published under the Open Government Licence v3.0. Nothing has been invented; if a time, age, rating or address was unclear it is marked as such or left blank. Price figures on the “Where to live” layer are area-level medians of standard (Category A) sales from HM Land Registry Price Paid Data for 2023–2025. Contains HM Land Registry data © Crown copyright and database right 2026. This data is licensed under the Open Government Licence v3.0. Address fields in that dataset are from AddressBase / PAF and may need a Royal Mail licence for some commercial uses. Character-area boundaries are approximate except where they follow a published conservation-area boundary. Map data © OpenStreetMap contributors (ODbL) and OpenFreeMap; satellite imagery Esri. See data/SOURCES.md for licences and download dates.</p>
+      </details>
+    </aside>
+
+    <button id="legend-open" class="legend-fab" aria-label="Show layers">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5z"/><path d="m3 13 9 5 9-5"/></svg>
+      Layers
+    </button>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
