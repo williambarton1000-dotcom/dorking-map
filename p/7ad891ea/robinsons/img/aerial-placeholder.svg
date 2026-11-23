@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Aerial photo by WB Photography">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d7e4ee"/>
+      <stop offset="1" stop-color="#f3ebe0"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#sky)"/>
+  <path d="M0 230 C 80 200, 160 250, 260 220 C 360 190, 420 240, 520 210 C 580 195, 620 220, 640 210 L 640 360 L 0 360 Z" fill="#c5d4c0"/>
+  <path d="M0 270 C 120 250, 200 290, 340 260 C 460 230, 540 280, 640 255 L 640 360 L 0 360 Z" fill="#a9c0a4"/>
+  <rect x="250" y="198" width="150" height="78" fill="#8b6d5a" opacity=".5"/>
+  <rect x="270" y="172" width="70" height="26" fill="#8b6d5a" opacity=".4"/>
+  <rect x="262" y="214" width="18" height="18" fill="#f3ebe0" opacity=".45"/>
+  <rect x="292" y="214" width="18" height="18" fill="#f3ebe0" opacity=".45"/>
+  <rect x="322" y="214" width="18" height="18" fill="#f3ebe0" opacity=".45"/>
+  <g transform="translate(430,95)" fill="none" stroke="#3a2a22" stroke-width="2.2" stroke-linecap="round" opacity=".55">
+    <rect x="-14" y="-5" width="28" height="10" rx="2" fill="#3a2a22" stroke="none" opacity=".7"/>
+    <circle cx="-24" cy="0" r="8"/>
+    <circle cx="24" cy="0" r="8"/>
+    <circle cx="-10" cy="-18" r="6"/>
+    <circle cx="10" cy="-18" r="6"/>
+    <path d="M-14 -3 L-10 -14M14 -3 L10 -14"/>
+  </g>
+</svg>
