@@ -169,3 +169,14 @@ Defined in `tools/layers.json`. At first build the live pins spanned
 about 51.131–51.272 N and 0.484–0.240 W. The box is padded so a new
 pin in, say, Reigate or Guildford is accepted, but a pin in another
 county is flagged.
+
+## Seasonal layers (not part of the sheet)
+
+Temporary seasonal layers on https://dorkingmaps.uk/surrey-hills/ (for example
+**Christmas trees (seasonal)**) are not in the sheet and are not managed by
+this sync. They live in the `dorkingmaps` hub repo under
+`surrey-hills/data/seasonal/` with their own block in
+`surrey-hills/js/config.js`. If the sync is ever pointed at the hub, it must
+only rewrite the five sheet-driven CSVs in `surrey-hills/data/`, never touch
+`data/seasonal/`, and never overwrite the hub's `js/config.js`, `js/app.js` or
+`css/style.css` from this repo. See the hub README, 'Seasonal layers'.
